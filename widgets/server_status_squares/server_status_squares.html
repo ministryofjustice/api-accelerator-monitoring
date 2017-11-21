@@ -1,0 +1,15 @@
+<h1 class="title" data-bind="title"></h1>
+<span class="build-number">Git Ref:</span>
+<span class="build-number" data-bind="result.gitRef"></span>
+
+<ul class="services">
+    <li>
+        <span class="label">LDAP:</span>
+        <span class="value" data-bind="result.ldap"></span>
+    </li>
+    <li>
+        <span class="label">DB:</span>
+        <span class="value" data-bind="result.db"></span>
+    </li>
+</ul>
+<p class="updated-at" data-bind="updatedAtMessage"></p>
