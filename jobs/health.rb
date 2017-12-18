@@ -33,17 +33,17 @@ PING_COUNT = 10
 
 servers = [
   { name: 'delius-api-dev', url: 'http://deliusapi-dev.sbw4jt6rsq.eu-west-2.elasticbeanstalk.com/api', info: true },
-  { name: 'delius-api-stage', url: 'http://deliusapi-stage.xxxxxx.eu-west-2.elasticbeanstalk.com/api' },
-  { name: 'delius-api-prod', url: 'http://deliusapi-prod.xxxxxx.eu-west-2.elasticbeanstalk.com/api' },
+  { name: 'delius-api-stage', url: 'http://deliusapi-stage.xxxxxx.eu-west-2.elasticbeanstalk.com/api', info: true },
+  { name: 'delius-api-prod', url: 'http://deliusapi-prod.xxxxxx.eu-west-2.elasticbeanstalk.com/api', info: true },
+
+  { name: 'delius-api-job-schedular-dev', url: 'http://delius-api-job-schedular-dev.tqek38d8jq.eu-west-2.elasticbeanstalk.com' },
+  { name: 'delius-api-job-schedular-prod', url: 'http://delius-api-job-schedular-prod.xxxxxx.eu-west-2.elasticbeanstalk.com' },
 
   { name: 'rsr-calculator-service-dev', url: 'https://rsr-dev.hmpps.dsd.io' },
   { name: 'rsr-calculator-service-prod', url: 'https://rsr.service.hmpps.dsd.io' },
 
   { name: 'viper-service-dev', url: 'https://viper-dev.hmpps.dsd.io' },
   { name: 'viper-service-prod', url: 'https://viper.service.hmpps.dsd.io' },
-
-  { name: 'delius-api-job-schedular-dev', url: 'http://delius-api-job-schedular-dev.tqek38d8jq.eu-west-2.elasticbeanstalk.com' },
-  { name: 'delius-api-job-schedular-prod', url: 'http://delius-api-job-schedular-prod.xxxxxx.eu-west-2.elasticbeanstalk.com' },
 ]
 
 def gather_health_data(server)
@@ -57,8 +57,10 @@ def gather_health_data(server)
 
     return {
         status: response_health['status'] || response_health['healthy'] ? 'UP' : 'DOWN',
+        version: response_health['version'] || 'N/A',
+        uptime: response_health['uptime'] || 'N/A',
         ldap: response_health['ldap'] ? response_health['ldap']['status'] : 'N/A',
-        db: response_health['db'] ? response_health['db']['status'] : 'N/A',
+        db: response_health['db'] ? response_health['db']['status'] : response_health['checks'] ? response_health['checks']['db'] : 'N/A',
         gitRef: server[:info] ? response_info['git']['commit']['id'] : response_health['build'] ? response_health['build']['gitRef'][0...7] : 'N/A'
     }
     rescue HTTParty::Error => expection
