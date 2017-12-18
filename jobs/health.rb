@@ -32,13 +32,16 @@ PING_COUNT = 10
 #
 
 servers = [
-  { name: 'delius-api-dev', url: 'http://deliusapi-dev.sbw4jt6rsq.eu-west-2.elasticbeanstalk.com/api' },
+  { name: 'delius-api-dev', url: 'http://deliusapi-dev.sbw4jt6rsq.eu-west-2.elasticbeanstalk.com/api', info: true },
   { name: 'delius-api-stage', url: 'http://deliusapi-stage.xxxxxx.eu-west-2.elasticbeanstalk.com/api' },
   { name: 'delius-api-prod', url: 'http://deliusapi-prod.xxxxxx.eu-west-2.elasticbeanstalk.com/api' },
+
   { name: 'rsr-calculator-service-dev', url: 'https://rsr-dev.hmpps.dsd.io' },
   { name: 'rsr-calculator-service-prod', url: 'https://rsr.service.hmpps.dsd.io' },
+
   { name: 'viper-service-dev', url: 'https://viper-dev.hmpps.dsd.io' },
   { name: 'viper-service-prod', url: 'https://viper.service.hmpps.dsd.io' },
+
   { name: 'delius-api-job-schedular-dev', url: 'http://delius-api-job-schedular-dev.tqek38d8jq.eu-west-2.elasticbeanstalk.com' },
   { name: 'delius-api-job-schedular-prod', url: 'http://delius-api-job-schedular-prod.xxxxxx.eu-west-2.elasticbeanstalk.com' },
 ]
@@ -47,21 +50,24 @@ def gather_health_data(server)
 
   begin
     response_health = HTTParty.get("#{server[:url]}/health", headers: { 'Accept' => 'application/json' }, timeout: 5)
-    response_info = HTTParty.get("#{server[:url]}/info", headers: { 'Accept' => 'application/json' }, timeout: 5)
+
+    if server[:info]
+      response_info = HTTParty.get("#{server[:url]}/info", headers: { 'Accept' => 'application/json' }, timeout: 5)
+    end
 
     return {
-        status: response_health['status'],
-        ldap: response_health['ldap']['status'],\
-        db: response_health['db']['status'],
-        gitRef: response_info['git']['commit']['id']
+        status: response_health['status'] || response_health['healthy'] ? 'UP' : 'DOWN',
+        ldap: response_health['ldap'] ? response_health['ldap']['status'] : 'N/A',
+        db: response_health['db'] ? response_health['db']['status'] : 'N/A',
+        gitRef: server[:info] ? response_info['git']['commit']['id'] : response_health['build'] ? response_health['build']['gitRef'][0...7] : 'N/A'
     }
-  rescue HTTParty::Error => expection
-    ap expection.class
-    return { status: 'error', gitRef: expection.class, ldap: "N/A", db: "N/A" }
-  rescue StandardError => expection
-    ap expection.class
-    return { status: 'error', gitRef: expection.class, ldap: "N/A", db: "N/A" }
-  end
+    rescue HTTParty::Error => expection
+        ap expection.class
+        return { status: 'error', gitRef: expection.class, ldap: "N/A", db: "N/A" }
+    rescue StandardError => expection
+        ap expection.class
+        return { status: 'error', gitRef: expection.class, ldap: "N/A", db: "N/A" }
+    end
 end
 
 SCHEDULER.every '60s', first_in: 0 do |_job|
