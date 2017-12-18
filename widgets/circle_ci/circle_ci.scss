@@ -1,47 +1,31 @@
 $state-color:              #FFF;
-$background-color:         #8fb347;
+$background-color:         #12b0c5;
 $background-error-color:   #A31F1F;
 $background-passed-color:  #8fb347;
 $background-pending-color: #47bbb3;
 
-$title-color:       rgba(255, 255, 255, 1);
+$title-color:       rgba(255, 255, 255, 0.7);
 $label-color:       rgba(255, 255, 255, 0.7);
 $moreinfo-color:    rgba(255, 255, 255, 0.7);
 
-.widget-circle-ci{
-
+.widget-circle-ci {
   background-color: $background-color;
   vertical-align: top;
 
-  img.background {
-    width: 100% !important;
-    position: absolute;
-    left: 0;
-    top: 30px;
-    opacity: 0.05;
+  .title {
+    color: $title-color;
+    font-size: 25px;
+    margin-bottom: 0;
   }
 
-  .committer-info {
+  .commit-info {
     margin: 10px 0px;
     padding: 5px;
     background: rgba(255, 255, 255, 0.3);
 
-    img {
-      float:left;
-    }
-
     .label {
-      text-align: left;
-      padding-left: 90px;
-      font-size: 20px;
-      &.small {
-        font-size: 14px;
-      }
+      font-size: 14px;
     }
-  }
-
-  .title {
-    color: $title-color;
   }
 
   ol, ul {
@@ -63,23 +47,23 @@ $moreinfo-color:    rgba(255, 255, 255, 0.7);
   }
 
   .label {
-    text-align: center;
     display: block;
     color: $label-color;
-    font-size: 24px;
+    font-size: 18px;
     word-wrap: break-word;
-
-    &.small {
-      font-size: 18px;
-    }
   }
 
   .state {
-    text-align: center;
     display: block;
     font-weight: 600;
     color: $state-color;
-    font-size: 40px;
+    font-size: 18px;
+    word-wrap: break-word;
+  }
+
+  .time {
+    display: block;
+    font-size: 11px;
     word-wrap: break-word;
   }
 
@@ -89,6 +73,10 @@ $moreinfo-color:    rgba(255, 255, 255, 0.7);
 
   .more-info {
     color: $moreinfo-color;
+  }
+
+  .build-info {
+    font-size: 14px;
   }
 
   &.failed {

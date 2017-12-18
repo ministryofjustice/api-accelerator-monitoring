@@ -1,25 +1,55 @@
-<% content_for(:title) { "Build Status" } %>
+<script type='text/javascript'>
+$(function() {
+  // These settings override the defaults set in application.coffee. You can do this on a per dashboard basis.
+  Dashing.widget_base_dimensions = [350, 200]
+});
+</script>
+
+<% content_for :title do %>API Accelerator Monitor<% end %>
+
 <div class="gridster">
   <ul>
     <li data-row="1" data-col="1" data-sizex="1" data-sizey="1">
-      <h3>CI Status</h3>
       <div data-id="circle-ci-noms-digital-studio-delius-offender-api-master" data-view="CircleCi" data-title="Delius API"></div>
     </li>
-
-    <li data-row="1" data-col="2" data-sizex="1" data-sizey="1">
-      <h3>DEV Health</h3>
+    <li data-row="1" data-col="1" data-sizex="1" data-sizey="1">
       <div data-id="delius-api-dev" data-view="ServerStatusSquares" data-title="Delius API"></div>
     </li>
-
-    <li data-row="1" data-col="3" data-sizex="1" data-sizey="1">
-      <h3>STAGE Health</h3>
+    <li data-row="1" data-col="1" data-sizex="1" data-sizey="1">
       <div data-id="delius-api-stage" data-view="ServerStatusSquares" data-title="Delius API"></div>
     </li>
-
-    <li data-row="1" data-col="4" data-sizex="1" data-sizey="1">
-      <h3>PROD Health</h3>
+    <li data-row="1" data-col="1" data-sizex="1" data-sizey="1">
       <div data-id="delius-api-prod" data-view="ServerStatusSquares" data-title="Delius API"></div>
     </li>
-  </ul>
 
+    <li data-row="1" data-col="1" data-sizex="1" data-sizey="1">
+      <div data-id="circle-ci-noms-digital-studio-delius-api-job-schedular" data-view="CircleCi" data-title="Delius API Job Schedular"></div>
+    </li>
+    <li data-row="1" data-col="1" data-sizex="1" data-sizey="1">
+      <div data-id="delius-api-job-schedular-dev" data-view="ServerStatusSquares" data-title="Delius API Job Schedular"></div>
+    </li>
+    <li data-row="1" data-col="1" data-sizex="2" data-sizey="1">
+      <div data-id="delius-api-job-schedular-prod" data-view="ServerStatusSquares" data-title="Delius API Job Schedular"></div>
+    </li>
+
+    <li data-row="1" data-col="1" data-sizex="1" data-sizey="1">
+      <div data-id="circle-ci-noms-digital-studio-rsr-calculator-service" data-view="CircleCi" data-title="Risk Calculator service"></div>
+    </li>
+    <li data-row="1" data-col="1" data-sizex="1" data-sizey="1">
+      <div data-id="rsr-calculator-service-dev" data-view="ServerStatusSquares" data-title="Risk Calculator service"></div>
+    </li>
+    <li data-row="1" data-col="1" data-sizex="2" data-sizey="1">
+      <div data-id="rsr-calculator-service-prod" data-view="ServerStatusSquares" data-title="Risk Calculator service"></div>
+    </li>
+
+    <li data-row="1" data-col="1" data-sizex="1" data-sizey="1">
+      <div data-id="circle-ci-noms-digital-studio-viper-service" data-view="CircleCi" data-title="VIPER service"></div>
+    </li>
+    <li data-row="1" data-col="1" data-sizex="1" data-sizey="1">
+      <div data-id="viper-service-dev" data-view="ServerStatusSquares" data-title="VIPER service"></div>
+    </li>
+    <li data-row="1" data-col="1" data-sizex="2" data-sizey="1">
+      <div data-id="viper-service-prod" data-view="ServerStatusSquares" data-title="VIPER service"></div>
+    </li>
+  </ul>
 </div>

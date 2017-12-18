@@ -2,6 +2,9 @@ require 'httparty'
 
 ci_projects = [
   { user: 'noms-digital-studio', repo: 'delius-offender-api', branch: 'master'},
+  { user: 'noms-digital-studio', repo: 'delius-api-job-schedular', branch: 'master'},
+  { user: 'noms-digital-studio', repo: 'rsr-calculator-service', branch: 'master'},
+  { user: 'noms-digital-studio', repo: 'viper-service', branch: 'master'},
 ]
 
 def duration(time)
