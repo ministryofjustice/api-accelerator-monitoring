@@ -34,9 +34,13 @@ PING_COUNT = 10
 #
 
 servers = [
-  { name: 'delius-api-dev', url: 'http://deliusapi-dev.sbw4jt6rsq.eu-west-2.elasticbeanstalk.com/api/info' },
-  #{ name: 'delius-api-stage', url: 'http://deliusapi-stage.xxxxxx.eu-west-2.elasticbeanstalk.com/api/info' },
-  #{ name: 'delius-api-prod', url: 'http://deliusapi-prod.xxxxxx.eu-west-2.elasticbeanstalk.com/api/info' },
+  {
+    name: 'delius-api-dev',
+    url: 'http://deliusapi-dev.sbw4jt6rsq.eu-west-2.elasticbeanstalk.com/api/health',
+    info: 'http://deliusapi-dev.sbw4jt6rsq.eu-west-2.elasticbeanstalk.com/api/info'
+  },
+  #{ name: 'delius-api-stage', url: 'http://deliusapi-stage.xxxxxx.eu-west-2.elasticbeanstalk.com/api/health' },
+  #{ name: 'delius-api-prod', url: 'http://deliusapi-prod.xxxxxx.eu-west-2.elasticbeanstalk.com/api/health' },
 
   { name: 'delius-api-job-schedular-dev', url: 'http://delius-api-job-schedular-dev.tqek38d8jq.eu-west-2.elasticbeanstalk.com/health' },
   #{ name: 'delius-api-job-schedular-prod', url: 'http://delius-api-job-schedular-prod.xxxxxx.eu-west-2.elasticbeanstalk.com/health' },
@@ -53,13 +57,17 @@ def gather_health_data(server)
   begin
     health = HTTParty.get("#{server[:url]}", headers: { 'Accept' => 'application/json' }, timeout: 5)
 
+    if server[:info]
+      info = HTTParty.get("#{server[:info]}", headers: { 'Accept' => 'application/json' }, timeout: 5)
+    end
+
     return {
         status: health['status'] || health['healthy'] ? 'UP' : 'DOWN',
         version: health['version'] || 'N/A',
         uptime: health['uptime'] || 'N/A',
         ldap: health['ldap'] ? health['ldap']['status'] : 'N/A',
         db: health['db'] ? health['db']['status'] : health['checks'] ? health['checks']['db'] : 'N/A',
-        gitRef: health['git'] ? health['git']['commit']['id'] : health['build'] ? health['build']['gitRef'][0...7] : 'N/A'
+        gitRef: server[:info] ? info['git']['commit']['id'] : health['build'] ? health['build']['gitRef'][0...7] : 'N/A'
     }
     rescue HTTParty::Error => expection
         ap expection.class
@@ -73,8 +81,6 @@ end
 SCHEDULER.every '60s', first_in: 0 do |_job|
   servers.each do |server|
     result = gather_health_data(server)
-    ap server
-    ap result
     send_event(server[:name], result: result)
   end
 end
