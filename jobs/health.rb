@@ -34,36 +34,32 @@ PING_COUNT = 10
 #
 
 servers = [
-  { name: 'delius-api-dev', url: 'http://deliusapi-dev.sbw4jt6rsq.eu-west-2.elasticbeanstalk.com/api', info: true },
-  #{ name: 'delius-api-stage', url: 'http://deliusapi-stage.xxxxxx.eu-west-2.elasticbeanstalk.com/api', info: true },
-  #{ name: 'delius-api-prod', url: 'http://deliusapi-prod.xxxxxx.eu-west-2.elasticbeanstalk.com/api', info: true },
+  { name: 'delius-api-dev', url: 'http://deliusapi-dev.sbw4jt6rsq.eu-west-2.elasticbeanstalk.com/api/info' },
+  #{ name: 'delius-api-stage', url: 'http://deliusapi-stage.xxxxxx.eu-west-2.elasticbeanstalk.com/api/info' },
+  #{ name: 'delius-api-prod', url: 'http://deliusapi-prod.xxxxxx.eu-west-2.elasticbeanstalk.com/api/info' },
 
-  { name: 'delius-api-job-schedular-dev', url: 'http://delius-api-job-schedular-dev.tqek38d8jq.eu-west-2.elasticbeanstalk.com' },
-  #{ name: 'delius-api-job-schedular-prod', url: 'http://delius-api-job-schedular-prod.xxxxxx.eu-west-2.elasticbeanstalk.com' },
+  { name: 'delius-api-job-schedular-dev', url: 'http://delius-api-job-schedular-dev.tqek38d8jq.eu-west-2.elasticbeanstalk.com/health' },
+  #{ name: 'delius-api-job-schedular-prod', url: 'http://delius-api-job-schedular-prod.xxxxxx.eu-west-2.elasticbeanstalk.com/health' },
 
-  { name: 'rsr-calculator-service-dev', url: 'https://rsr-dev.hmpps.dsd.io' },
-  { name: 'rsr-calculator-service-prod', url: 'https://rsr.service.hmpps.dsd.io' },
+  { name: 'rsr-calculator-service-dev', url: 'https://health-kick.hmpps.dsd.io/https/rsr-dev.hmpps.dsd.io' },
+  { name: 'rsr-calculator-service-prod', url: 'https://health-kick.hmpps.dsd.io/https/rsr.service.hmpps.dsd.io' },
 
-  { name: 'viper-service-dev', url: 'https://viper-dev.hmpps.dsd.io' },
-  { name: 'viper-service-prod', url: 'https://viper.service.hmpps.dsd.io' },
+  { name: 'viper-service-dev', url: 'https://health-kick.hmpps.dsd.io/https/viper-dev.hmpps.dsd.io' },
+  { name: 'viper-service-prod', url: 'https://health-kick.hmpps.dsd.io/https/viper.service.hmpps.dsd.io' },
 ]
 
 def gather_health_data(server)
 
   begin
-    response_health = HTTParty.get("#{server[:url]}/health", headers: { 'Accept' => 'application/json' }, timeout: 5)
-
-    if server[:info]
-      response_info = HTTParty.get("#{server[:url]}/info", headers: { 'Accept' => 'application/json' }, timeout: 5)
-    end
+    health = HTTParty.get("#{server[:url]}", headers: { 'Accept' => 'application/json' }, timeout: 5)
 
     return {
-        status: response_health['status'] || response_health['healthy'] ? 'UP' : 'DOWN',
-        version: response_health['version'] || 'N/A',
-        uptime: response_health['uptime'] || 'N/A',
-        ldap: response_health['ldap'] ? response_health['ldap']['status'] : 'N/A',
-        db: response_health['db'] ? response_health['db']['status'] : response_health['checks'] ? response_health['checks']['db'] : 'N/A',
-        gitRef: server[:info] ? response_info['git']['commit']['id'] : response_health['build'] ? response_health['build']['gitRef'][0...7] : 'N/A'
+        status: health['status'] || health['healthy'] ? 'UP' : 'DOWN',
+        version: health['version'] || 'N/A',
+        uptime: health['uptime'] || 'N/A',
+        ldap: health['ldap'] ? health['ldap']['status'] : 'N/A',
+        db: health['db'] ? health['db']['status'] : health['checks'] ? health['checks']['db'] : 'N/A',
+        gitRef: health['git'] ? health['git']['commit']['id'] : health['build'] ? health['build']['gitRef'][0...7] : 'N/A'
     }
     rescue HTTParty::Error => expection
         ap expection.class
@@ -77,6 +73,8 @@ end
 SCHEDULER.every '60s', first_in: 0 do |_job|
   servers.each do |server|
     result = gather_health_data(server)
+    ap server
+    ap result
     send_event(server[:name], result: result)
   end
 end
