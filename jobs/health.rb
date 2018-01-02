@@ -25,6 +25,8 @@ PING_COUNT = 10
 #   method
 #       => http
 #       => ping
+#   info
+#       => a boolean to detail wether to check the /info url as well as /health
 #
 # Notes:
 #   => If the server you're checking redirects (from http to https for example)
