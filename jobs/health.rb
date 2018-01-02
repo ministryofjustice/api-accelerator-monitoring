@@ -61,14 +61,28 @@ def gather_health_data(server)
       info = HTTParty.get("#{server[:info]}", headers: { 'Accept' => 'application/json' }, timeout: 5)
     end
 
-    return {
+    data = {
         status: health['status'] || health['healthy'] ? 'UP' : 'DOWN',
         version: health['version'] || 'N/A',
         uptime: health['uptime'] || 'N/A',
-        ldap: health['ldap'] ? health['ldap']['status'] : 'N/A',
-        db: health['db'] ? health['db']['status'] : health['checks'] ? health['checks']['db'] : 'N/A',
+        services: [],
         gitRef: server[:info] ? info['git']['commit']['id'] : health['build'] ? health['build']['gitRef'][0...7] : 'N/A'
     }
+
+    if health['ldap']
+      data[:services] << { label: 'LDAP' , value: health['ldap']['status'] }
+    end
+
+    if health['db']
+      data[:services] << { label: 'DB' , value: health['db']['status'] }
+    end
+
+    if health['checks'] && health['checks']['db']
+      data[:services] << { label: 'DB' , value: health['checks']['db'] }
+    end
+
+    return data
+
     rescue HTTParty::Error => expection
         ap expection.class
         return { status: 'error', gitRef: expection.class, ldap: "N/A", db: "N/A" }
@@ -81,6 +95,9 @@ end
 SCHEDULER.every '60s', first_in: 0 do |_job|
   servers.each do |server|
     result = gather_health_data(server)
+
+    ap result
+
     send_event(server[:name], result: result)
   end
 end
