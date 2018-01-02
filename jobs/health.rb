@@ -45,11 +45,11 @@ servers = [
   { name: 'delius-api-job-schedular-dev', url: 'http://delius-api-job-schedular-dev.tqek38d8jq.eu-west-2.elasticbeanstalk.com/health' },
   #{ name: 'delius-api-job-schedular-prod', url: 'http://delius-api-job-schedular-prod.xxxxxx.eu-west-2.elasticbeanstalk.com/health' },
 
-  { name: 'rsr-calculator-service-dev', url: 'https://health-kick.hmpps.dsd.io/https/rsr-dev.hmpps.dsd.io' },
-  { name: 'rsr-calculator-service-prod', url: 'https://health-kick.hmpps.dsd.io/https/rsr.service.hmpps.dsd.io' },
+  { name: 'rsr-calculator-service-dev', url: 'https://rsr-dev.hmpps.dsd.io/health' },
+  { name: 'rsr-calculator-service-prod', url: 'https://rsr.service.hmpps.dsd.io/health' },
 
-  { name: 'viper-service-dev', url: 'https://health-kick.hmpps.dsd.io/https/viper-dev.hmpps.dsd.io' },
-  { name: 'viper-service-prod', url: 'https://health-kick.hmpps.dsd.io/https/viper.service.hmpps.dsd.io' },
+  { name: 'viper-service-dev', url: 'https://viper-dev.hmpps.dsd.io/health' },
+  { name: 'viper-service-prod', url: 'https://health-kick.hmpps.dsd.io/https/viper.service.hmpps.dsd.io/health' },
 ]
 
 def gather_health_data(server)
